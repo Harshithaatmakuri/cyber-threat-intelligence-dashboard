@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🕓 Scan History</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        h2 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        a {
+            text-decoration: none;
+            color: blue;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>🕓 Scan History</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>IP Address</th>
+                <th>Abuse Score</th>
+                <th>Country</th>
+                <th>ISP</th>
+                <th>VT Harmless</th>
+                <th>VT Malicious</th>
+                <th>VT Suspicious</th>
+                <th>Timestamp (Local)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in history %}
+            <tr>
+                <td>{{ item.ip }}</td>
+                <td>{{ item.abuse_result.abuseConfidenceScore or 'Not reported' }}</td>
+                <td>{{ item.abuse_result.countryCode or 'Not reported' }}</td>
+                <td>{{ item.abuse_result.isp or 'Not reported' }}</td>
+                <td>{{ item.vt_result.harmless or 'Not reported' }}</td>
+                <td>{{ item.vt_result.malicious or 'Not reported' }}</td>
+                <td>{{ item.vt_result.suspicious or 'Not reported' }}</td>
+                <td>{{ item.timestamp }}</td>  <!-- Already formatted in app.py -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br>
+    <a href="/">⬅ Back to Home</a>
+</body>
+</html>

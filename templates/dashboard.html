@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>📊 Cyber Threat Intelligence Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        h2 { margin-top: 40px; }
+        table, th, td {
+
+
+            border: 1px solid #ccc;
+            border-collapse: collapse;
+            padding: 8px;
+        }
+        th { background-color: #f2f2f2; }
+        canvas { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h2>🔴 Live Threat Feed (ThreatFox)</h2>
+    <table>
+        <tr>
+            <th>IOC</th>
+            <th>Threat Type</th>
+            <th>Malware</th>
+            <th>Confidence</th>
+        </tr>
+        {% for row in threat_data %}
+            {% if row.ioc != 'Error' %}
+                <tr>
+                    <td>{{ row.ioc }}</td>
+                    <td>{{ row.threat_type }}</td>
+                    <td>{{ row.malware }}</td>
+                    <td>{{ row.confidence }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4" style="color: red;">{{ row.threat_type }}</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+
+    <h2>📈 AbuseIPDB Score Chart</h2>
+    <canvas id="abuseChart" width="400" height="200"></canvas>
+    <script>
+        const labels = {{ labels | safe }};
+        const data = {{ scores | safe }};
+        const colors = {{ colors | safe }};
+
+        const ctx = document.getElementById('abuseChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Abuse Scores',
+                    data: data,
+                    backgroundColor: colors
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

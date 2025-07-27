@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cyber Threat Intelligence Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background-color: #f2f2f2;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin-top: 20px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            width: 300px;
+        }
+        button {
+            padding: 10px 20px;
+            margin-left: 10px;
+        }
+        .nav {
+            margin-top: 30px;
+        }
+        .nav a {
+            margin-right: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cyber Threat Intelligence Dashboard</h1>
+    <form method="POST" action="/check">
+        <label for="ip">Enter IP address:</label>
+        <input type="text" name="ip" required>
+        <button type="submit">Check</button>
+    </form>
+
+    <div class="nav">
+        <a href="/dashboard">📊 Open Dashboard</a>
+        <a href="/history">📜 View Scan History</a>
+        <a href="/export">⬇ Export CSV</a>
+    </div>
+</body>
+</html>

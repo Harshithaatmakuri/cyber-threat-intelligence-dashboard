@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IP Reputation Results</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background-color: #f9f9f9;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+
+        .score-green { color: green; }
+        .score-orange { color: orange; }
+        .score-red { color: red; }
+    </style>
+</head>
+<body>
+
+    <h2>Scan Results for {{ ip }}</h2>
+
+    <div class="section">
+        <h3>AbuseIPDB Result</h3>
+        {% if abuse_result.error %}
+            <p style="color:red;">{{ abuse_result.error }}</p>
+        {% else %}
+            <p>Abuse Score: 
+                <strong class="
+                    {% if abuse_result.abuseConfidenceScore > 70 %}score-red
+                    {% elif abuse_result.abuseConfidenceScore > 30 %}score-orange
+                    {% else %}score-green{% endif %}">
+                    {{ abuse_result.abuseConfidenceScore }}
+                </strong>
+            </p>
+            <p>Country: {{ abuse_result.countryCode or 'Not reported' }}</p>
+            <p>ISP: {{ abuse_result.isp or 'Not reported' }}</p>
+            <p>Domain: {{ abuse_result.domain or 'Not reported' }}</p>
+            <p>Usage Type: {{ abuse_result.usageType or 'Not reported' }}</p>
+            <p>Abuse Categories: {{ abuse_result.abuseCategories or 'Not reported' }}</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h3>VirusTotal Result</h3>
+        {% if vt_result.error %}
+            <p style="color:red;">{{ vt_result.error }}</p>
+        {% else %}
+            <p>Harmless: {{ vt_result.harmless }}</p>
+            <p>Malicious: {{ vt_result.malicious }}</p>
+            <p>Suspicious: {{ vt_result.suspicious }}</p>
+            <p>Undetected: {{ vt_result.undetected }}</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h3>Abuse Score Chart</h3>
+        <canvas id="abuseChart" width="500" height="250"></canvas>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('abuseChart').getContext('2d');
+        const chartData = {{ abuse_scores | tojson }};
+        const chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: chartData.map(d => d.ip),
+                datasets: [{
+                    label: 'Abuse Confidence Score',
+                    data: chartData.map(d => d.score),
+                    backgroundColor: chartData.map(d => {
+                        if (d.score > 70) return 'red';
+                        if (d.score > 30) return 'orange';
+                        return 'green';
+                    })
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+    </script>
+
+    <br>
+    <a href="/">⬅ Back to Home</a> |
+    <a href="/history">🕓 View History</a> |
+    <a href="/dashboard">📊 Open Dashboard</a>
+
+</body>
+</html>
