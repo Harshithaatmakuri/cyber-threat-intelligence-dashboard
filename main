@@ -1,0 +1,47 @@
+from flask import Flask, render_template, request
+import os
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
+app = Flask(__name__)
+
+ABUSEIPDB_API_KEY = os.getenv("ABUSEIPDB_API_KEY")
+VIRUSTOTAL_API_KEY = os.getenv("VIRUSTOTAL_API_KEY")
+
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+@app.route("/check", methods=["POST"])
+def check_ip():
+    ip = request.form.get("ip")
+    abuse_score = None
+    vt_result = None
+    
+    # AbuseIPDB API request
+    abuseipdb_url = f"https://api.abuseipdb.com/api/v2/check?ipAddress={ip}&maxAgeInDays=90"
+    headers = {"Key": ABUSEIPDB_API_KEY, "Accept": "application/json"}
+    try:
+        response = requests.get(abuseipdb_url, headers=headers)
+        if response.status_code == 200:
+            data = response.json()
+            abuse_score = data.get("data", {}).get("abuseConfidenceScore")
+    except Exception as e:
+        abuse_score = f"Error: {e}"
+    
+    # VirusTotal API request (example)
+    vt_url = f"https://www.virustotal.com/api/v3/ip_addresses/{ip}"
+    vt_headers = {"x-apikey": VIRUSTOTAL_API_KEY}
+    try:
+        response = requests.get(vt_url, headers=vt_headers)
+        if response.status_code == 200:
+            vt_result = response.json()
+    except Exception as e:
+        vt_result = f"Error: {e}"
+    
+    return render_template("ip_checker.html", ip=ip, abuse_score=abuse_score, vt_result=vt_result)
+
+if __name__ == "__main__":
+    app.run(debug=True)
